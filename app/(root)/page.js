@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Suspense } from "react"
 import { ChevronRight } from "lucide-react"
 import { SpaceCard } from "@/components/spaces/SpaceCard"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,91 +12,119 @@ import { HeroSection, LogosSection } from "@/components/ui/hero-1"
 import HeroText from "@/components/ui/hero-shutter-text"
 import { StepCard } from "@/components/ui/step-card"
 
-// Async component for fetching spaces
-async function FeaturedSpaces() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/spaces?limit=3`, {
-      cache: 'no-store'
-    })
-    const spaces = await res.json()
-    
+// Component for fetching spaces
+function FeaturedSpaces() {
+  const [spaces, setSpaces] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/spaces?limit=3`, {
+          cache: 'no-store'
+        })
+        const data = await res.json()
+        setSpaces(data)
+      } catch (error) {
+        console.error("Error fetching spaces:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchSpaces()
+  }, [])
+
+  if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {spaces.map((space) => (
-          <SpaceCard key={space._id} space={space} />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="space-y-4">
+            <Skeleton className="aspect-video bg-[#242424]" />
+            <Skeleton className="h-6 w-3/4 bg-[#242424]" />
+            <Skeleton className="h-4 w-1/2 bg-[#242424]" />
+            <Skeleton className="h-4 w-full bg-[#242424]" />
+          </div>
         ))}
       </div>
     )
-  } catch (error) {
+  }
+
+  if (!spaces || spaces.length === 0) {
     return (
       <div className="text-center py-8" style={{ color: "#898989" }}>
         <p className="text-[#898989]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>Unable to load spaces at this time.</p>
       </div>
     )
   }
-}
 
-// Async component for fetching community threads
-async function CommunityThreads() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/community?limit=3`, {
-      cache: 'no-store'
-    })
-    const threads = await res.json()
-    
-    return (
-      <div className="space-y-4">
-        {threads.map((thread) => (
-          <Link 
-            key={thread._id} 
-            href={`/community/${thread._id}`}
-            className="block p-4 rounded-[8px] cursor-pointer bg-[#171717] border border-[#2e2e2e] hover:border-[rgba(62, 207, 142, 0.3)] transition-colors"
-          >
-            <h4 className="text-[16px] leading-[1.43] font-normal mb-2 text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-              {thread.title}
-            </h4>
-            <p className="text-[14px] leading-[1.43] font-normal text-[#898989]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-              {thread.content}
-            </p>
-          </Link>
-        ))}
-      </div>
-    )
-  } catch (error) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        <p className="text-[#898989]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>Unable to load community threads at this time.</p>
-      </div>
-    )
-  }
-}
-
-// Loading skeleton for spaces
-function SpacesSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="space-y-4">
-          <Skeleton className="aspect-video bg-[#242424]" />
-          <Skeleton className="h-6 w-3/4 bg-[#242424]" />
-          <Skeleton className="h-4 w-1/2 bg-[#242424]" />
-          <Skeleton className="h-4 w-full bg-[#242424]" />
-        </div>
+      {spaces.map((space) => (
+        <SpaceCard key={space._id} space={space} />
       ))}
     </div>
   )
 }
 
-// Loading skeleton for community
-function CommunitySkeleton() {
+// Component for fetching community threads
+function CommunityThreads() {
+  const [threads, setThreads] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchThreads = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/community?limit=3`, {
+          cache: 'no-store'
+        })
+        const data = await res.json()
+        setThreads(data)
+      } catch (error) {
+        console.error("Error fetching threads:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchThreads()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="p-4 space-y-3 bg-[#171717] border border-[#2e2e2e] rounded-[8px]">
+            <Skeleton className="h-6 w-3/4 bg-[#242424]" />
+            <Skeleton className="h-4 w-full bg-[#242424]" />
+            <Skeleton className="h-4 w-2/3 bg-[#242424]" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (!threads || threads.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-[#898989]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>Unable to load community threads at this time.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="p-4 space-y-3 bg-[#171717] border border-[#2e2e2e] rounded-[8px]">
-          <Skeleton className="h-6 w-3/4 bg-[#242424]" />
-          <Skeleton className="h-4 w-full bg-[#242424]" />
-          <Skeleton className="h-4 w-2/3 bg-[#242424]" />
-        </div>
+      {threads.map((thread) => (
+        <Link 
+          key={thread._id} 
+          href={`/community/${thread._id}`}
+          className="block p-4 rounded-[8px] cursor-pointer bg-[#171717] border border-[#2e2e2e] hover:border-[rgba(62, 207, 142, 0.3)] transition-colors"
+        >
+          <h4 className="text-[16px] leading-[1.43] font-normal mb-2 text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+            {thread.title}
+          </h4>
+          <p className="text-[14px] leading-[1.43] font-normal text-[#898989]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+            {thread.content}
+          </p>
+        </Link>
       ))}
     </div>
   )
@@ -203,9 +230,7 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <Suspense fallback={<SpacesSkeleton />}>
-            <FeaturedSpaces />
-          </Suspense>
+          <FeaturedSpaces />
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -305,9 +330,7 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="max-w-3xl mx-auto mb-12">
-            <Suspense fallback={<CommunitySkeleton />}>
-              <CommunityThreads />
-            </Suspense>
+            <CommunityThreads />
           </div>
 
           <motion.div
