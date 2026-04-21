@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ColivingCard } from "@/components/colivings/ColivingCard"
@@ -10,7 +10,7 @@ import { ArrowRight, Filter } from "lucide-react"
 import { Navbar } from "@/components/shared/Navbar"
 import { Footer } from "@/components/shared/Footer"
 
-export default function ColivingsPage() {
+function ColivingsPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -304,5 +304,37 @@ export default function ColivingsPage() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+function ColivingsPageFallback() {
+  return (
+    <div className="bg-[#171717] min-h-screen">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[96px]">
+        <div className="mb-8">
+          <Skeleton className="h-12 w-48 bg-[#242424]" />
+          <Skeleton className="h-5 w-64 bg-[#242424]" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="space-y-4">
+              <Skeleton className="h-48 rounded-[8px] bg-[#242424]" />
+              <Skeleton className="h-4 w-3/4 bg-[#242424]" />
+              <Skeleton className="h-4 w-1/2 bg-[#242424]" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <Footer />
+    </div>
+  )
+}
+
+export default function ColivingsPage() {
+  return (
+    <Suspense fallback={<ColivingsPageFallback />}>
+      <ColivingsPageContent />
+    </Suspense>
   )
 }
