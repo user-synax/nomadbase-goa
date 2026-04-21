@@ -90,13 +90,9 @@ export function SpaceCard({ space }) {
               /day
             </span>
           </div>
-          <Link
-            href={`/spaces/${space.slug}`}
-            className="text-[14px] font-medium transition-colors flex items-center text-[#00c573]"
-            style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
-          >
+          <span className="text-[14px] font-medium transition-colors flex items-center text-[#00c573]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
             Details <ChevronRight size={14} className="ml-1" />
-          </Link>
+          </span>
         </div>
       </div>
     </Link>
