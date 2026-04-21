@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Menu, LogOut, User, X } from "lucide-react"
+import { Menu, LogOut, User, X, ChevronDown } from "lucide-react"
 
 const navLinks = [
   { href: "/spaces", label: "Spaces" },
@@ -19,6 +19,7 @@ const navLinks = [
 export function Navbar() {
   const { data: session, status } = useSession()
   const [isOpen, setIsOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-15" style={{ backgroundColor: "#171717", borderBottom: "1px solid #242424" }}>
@@ -54,24 +55,48 @@ export function Navbar() {
               <div className="w-8 h-8 rounded-full bg-[#2e2e2e] animate-pulse" />
             ) : session ? (
               <div className="hidden md:flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
-                  <Avatar size="sm">
-                    <AvatarFallback className="text-xs font-semibold bg-[#3ecf8e] text-[#fafafa]">
-                      {session.user?.name?.[0] || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs text-white">
-                    {session.user?.name}
-                  </span>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                  >
+                    <Avatar size="sm">
+                      <AvatarFallback className="text-xs font-semibold bg-[#3ecf8e] text-[#fafafa]">
+                        {session.user?.name?.[0] || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+                      {session.user?.name}
+                    </span>
+                    <ChevronDown size={14} className="text-[#fafafa]" />
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-[#0f0f0f] border border-[#2e2e2e] rounded-[8px] shadow-lg py-1 z-50">
+                      <Link
+                        href={`/profile/${session.user?.email?.split('@')[0]}`}
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex items-center px-4 py-2 text-sm text-[#fafafa] hover:bg-[#171717] transition-colors"
+                        style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
+                      >
+                        <User size={16} className="mr-2" />
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          signOut()
+                          setIsDropdownOpen(false)
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-[#fafafa] hover:bg-[#171717] transition-colors"
+                        style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
+                      >
+                        <LogOut size={16} className="mr-2" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => signOut()}
-                  className="text-white/80 hover:text-white"
-                >
-                  <LogOut size={16} strokeWidth={2} />
-                </Button>
               </div>
             ) : (
               <div className="hidden md:block">
@@ -80,7 +105,7 @@ export function Navbar() {
                   className="px-8 py-2 text-[14px] leading-[1.14] font-medium text-[#fafafa] border border-[#fafafa] rounded-[9999px] hover:text-[#fafafa]"
                   style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif", backgroundColor: "#0f0f0f" }}
                 >
-                  <Link href="/auth/signin">Sign In</Link>
+                  <Link href="/signin">Sign In</Link>
                 </Button>
               </div>
             )}
@@ -136,6 +161,15 @@ export function Navbar() {
                                 </span>
                               </div>
                             </div>
+                            <Link
+                              href={`/profile/${session.user?.email?.split('@')[0]}`}
+                              onClick={() => setIsOpen(false)}
+                              className="flex items-center px-4 py-2 text-[16px] text-[#fafafa] hover:bg-[#171717] transition-colors"
+                              style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
+                            >
+                              <User size={18} strokeWidth={2} className="mr-2" />
+                              My Profile
+                            </Link>
                             <Button
                               variant="ghost"
                               onClick={() => {
@@ -154,7 +188,7 @@ export function Navbar() {
                             className="w-full px-8 py-2 text-[14px] leading-[1.14] font-medium text-[#fafafa] border border-[#fafafa] rounded-[9999px] hover:text-[#fafafa]"
                             style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif", backgroundColor: "#0f0f0f" }}
                           >
-                            <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                            <Link href="/signin" onClick={() => setIsOpen(false)}>
                               Sign In
                             </Link>
                           </Button>
