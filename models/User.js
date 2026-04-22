@@ -9,22 +9,14 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String },
   avatar: { type: String },
-  bio: { type: String },
-  country: { type: String },
-  currentLocation: { type: String },
-  nomadSince: { type: Date },
-  skills: [{ type: String }],
-  linkedinUrl: { type: String },
-  githubUrl: { type: String },
-  twitterUrl: { type: String },
-  role: { 
-    type: String, 
-    enum: ['user', 'admin'], 
-    default: 'user' 
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
   },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 }, {
   collection: 'users',
