@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Menu, LogOut, User, X, ChevronDown } from "lucide-react"
+import { Menu, LogOut, X, ChevronDown } from "lucide-react"
 
 const navLinks = [
   { href: "/spaces", label: "Spaces" },
@@ -74,15 +74,6 @@ export function Navbar() {
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 bg-[#0f0f0f] border border-[#2e2e2e] rounded-[8px] shadow-lg py-1 z-50">
-                      <Link
-                        href={`/profile/${session.user?.email?.split('@')[0]}`}
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="flex items-center px-4 py-2 text-sm text-[#fafafa] hover:bg-[#171717] transition-colors"
-                        style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
-                      >
-                        <User size={16} className="mr-2" />
-                        My Profile
-                      </Link>
                       <button
                         onClick={() => {
                           signOut()
@@ -161,15 +152,6 @@ export function Navbar() {
                                 </span>
                               </div>
                             </div>
-                            <Link
-                              href={`/profile/${session.user?.email?.split('@')[0]}`}
-                              onClick={() => setIsOpen(false)}
-                              className="flex items-center px-4 py-2 text-[16px] text-[#fafafa] hover:bg-[#171717] transition-colors"
-                              style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
-                            >
-                              <User size={18} strokeWidth={2} className="mr-2" />
-                              My Profile
-                            </Link>
                             <Button
                               variant="ghost"
                               onClick={() => {
