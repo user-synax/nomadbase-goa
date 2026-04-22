@@ -78,7 +78,7 @@ function CommunityThreads() {
           cache: 'no-store'
         })
         const data = await res.json()
-        setThreads(data)
+        setThreads(data.threads || [])
       } catch (error) {
         console.error("Error fetching threads:", error)
       } finally {
