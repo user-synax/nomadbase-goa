@@ -1,4 +1,7 @@
 import ThreadClient from "./ThreadClient";
+import { auth } from "@/lib/auth";
+import connect from "@/lib/db";
+import User from "@/models/User";
 
 export async function generateMetadata({ params }) {
   const { threadId } = await params;
@@ -26,8 +29,7 @@ export async function generateMetadata({ params }) {
 export default async function ThreadPage({ params }) {
   const { threadId } = await params;
   
-  // Server-side data fetch
-  let serverData = { thread: null, replies: [] };
+  let serverData = { thread: null, replies: [], isAuthor: false };
   
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/community/${threadId}`, {
@@ -40,11 +42,26 @@ export default async function ThreadPage({ params }) {
         thread: data.thread,
         replies: data.replies || [],
         upvoteCount: data.thread?.upvotes?.length || 0,
-        upvoted: false // Will be determined client-side with session
+        isAuthor: data.isAuthor || false
       };
     }
   } catch (error) {
     console.error("Error fetching thread server-side:", error);
+  }
+  
+  try {
+    const session = await auth();
+    if (session?.user?.email) {
+      await connect();
+      const user = await User.findOne({ email: session.user.email }).lean();
+      if (user && serverData.thread?.author) {
+        if (user._id.toString() === serverData.thread.author._id?.toString()) {
+          serverData.isAuthor = true;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error checking author status:", error);
   }
   
   return <ThreadClient threadId={threadId} serverData={serverData} />;
