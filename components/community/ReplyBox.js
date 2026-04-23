@@ -25,6 +25,8 @@ export default function ReplyBox({ threadId, onReplyAdded }) {
       // Validate with Zod
       const validatedData = replySchema.parse({ body });
 
+      console.log("Submitting reply to:", `/api/community/${threadId}/replies`);
+
       const response = await fetch(`/api/community/${threadId}/replies`, {
         method: "POST",
         headers: {
@@ -34,6 +36,7 @@ export default function ReplyBox({ threadId, onReplyAdded }) {
       });
 
       const data = await response.json();
+      console.log("Reply response:", response.status, data);
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to post reply");
@@ -47,8 +50,9 @@ export default function ReplyBox({ threadId, onReplyAdded }) {
         onReplyAdded(data);
       }
     } catch (error) {
+      console.error("Reply error:", error);
       if (error.name === "ZodError") {
-        toast.error(error.errors[0].message);
+        toast.error(error.errors?.[0]?.message || "Validation error");
       } else {
         toast.error(error.message || "Failed to post reply");
       }
