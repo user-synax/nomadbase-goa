@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import connect from "@/lib/db";
 import Thread from "@/models/Thread";
 import Reply from "@/models/Reply";
+import User from "@/models/User";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -24,7 +25,10 @@ export async function POST(request, { params }) {
     }
 
     const { threadId } = await params;
+    console.log("Reply route - threadId:", threadId);
+    
     const body = await request.json();
+    console.log("Reply route - body:", body);
 
     // Validate with Zod
     const validatedData = createReplySchema.parse(body);
@@ -41,8 +45,18 @@ export async function POST(request, { params }) {
     }
 
     // Create reply
+    let user = await User.findOne({ email: session.user.email });
+    
+    if (!user) {
+      user = await User.create({
+        name: session.user.name || "Anonymous",
+        email: session.user.email,
+        avatar: session.user.image,
+      });
+    }
+    
     const reply = await Reply.create({
-      author: session.user.id,
+      author: user._id,
       thread: threadId,
       body: validatedData.body,
     });
