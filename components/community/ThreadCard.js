@@ -59,7 +59,7 @@ export default function ThreadCard({ thread }) {
       </div>
 
       {/* Title */}
-      <Link href={`/community/thread/${_id}`}>
+      <Link href={`/community/${_id}`}>
         <h3 className="text-[18px] font-normal text-[#fafafa] mb-2 hover:text-[#3ecf8e] transition-colors" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
           {pinned && <span className="mr-2">📌</span>}
           {title}
