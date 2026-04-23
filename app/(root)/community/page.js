@@ -46,6 +46,7 @@ export default function CommunityPage() {
     tags: [],
   });
   const [tagInput, setTagInput] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     fetchThreads();
@@ -85,6 +86,7 @@ export default function CommunityPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFieldErrors({});
 
     try {
       // Validate with Zod
@@ -110,10 +112,15 @@ export default function CommunityPage() {
       setTagInput("");
       
       // Redirect to the new thread
-      router.push(`/community/thread/${data._id}`);
+      router.push(`/community/${data._id}`);
     } catch (error) {
-      if (error.name === "ZodError" && error.errors && error.errors[0]) {
-        toast.error(error.errors[0].message);
+      console.error("Thread creation error:", error);
+      if (error.name === "ZodError") {
+        const errors = {};
+        error.errors?.forEach((err) => {
+          errors[err.path[0]] = err.message;
+        });
+        setFieldErrors(errors);
       } else {
         toast.error(error.message || "Failed to create thread");
       }
@@ -337,7 +344,14 @@ export default function CommunityPage() {
       </div>
 
       {/* New Thread Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setFieldErrors({});
+            setFormData({ title: "", body: "", tags: [] });
+            setTagInput("");
+          }
+        }}>
         <DialogContent className="bg-[#171717] border-[#2e2e2e] text-[#fafafa] max-w-2xl w-[95%] mx-auto z-50">
           <DialogHeader>
             <DialogTitle className="text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
@@ -356,8 +370,17 @@ export default function CommunityPage() {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="Thread title (10-100 characters)"
-                className="bg-[#0f0f0f] border-[#2e2e2e] text-[#fafafa] placeholder:text-[#898989]"
+                className="bg-[#0f0f0f] text-[#fafafa] placeholder:text-[#898989]"
+                style={{
+                  borderColor: fieldErrors.title ? "#ef4444" : "#2e2e2e",
+                  outline: "none",
+                }}
               />
+              {fieldErrors.title && (
+                <p className="text-red-500 text-xs mt-1" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+                  {fieldErrors.title}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
@@ -368,8 +391,17 @@ export default function CommunityPage() {
                 onChange={(e) => setFormData({ ...formData, body: e.target.value })}
                 placeholder="What's on your mind? (20-2000 characters)"
                 rows={6}
-                className="bg-[#0f0f0f] border-[#2e2e2e] text-[#fafafa] placeholder:text-[#898989]"
+                className="bg-[#0f0f0f] text-[#fafafa] placeholder:text-[#898989]"
+                style={{
+                  borderColor: fieldErrors.body ? "#ef4444" : "#2e2e2e",
+                  outline: "none",
+                }}
               />
+              {fieldErrors.body && (
+                <p className="text-red-500 text-xs mt-1" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+                  {fieldErrors.body}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
