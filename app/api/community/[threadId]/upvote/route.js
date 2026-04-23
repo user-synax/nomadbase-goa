@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import connect from "@/lib/db";
 import Thread from "@/models/Thread";
+import User from "@/models/User";
 
 export const runtime = "nodejs";
 
@@ -9,7 +10,7 @@ export async function POST(request, { params }) {
   try {
     const session = await auth();
 
-    if (!session || !session.user?.id) {
+    if (!session || !session.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -17,9 +18,17 @@ export async function POST(request, { params }) {
     }
 
     const { threadId } = await params;
-    const userId = session.user.id;
 
     await connect();
+
+    // Find user by email
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
 
     // Find thread
     const thread = await Thread.findById(threadId);
@@ -30,18 +39,18 @@ export async function POST(request, { params }) {
       );
     }
 
-    // Check if user has already upvoted
-    const hasUpvoted = thread.upvotes.includes(userId);
+    // Check if user has already upvoted (compare as strings)
+    const hasUpvoted = thread.upvotes.some(up => up.toString() === user._id.toString());
 
     if (hasUpvoted) {
       // Remove upvote
       await Thread.findByIdAndUpdate(threadId, {
-        $pull: { upvotes: userId }
+        $pull: { upvotes: user._id }
       });
     } else {
       // Add upvote
       await Thread.findByIdAndUpdate(threadId, {
-        $push: { upvotes: userId }
+        $push: { upvotes: user._id }
       });
     }
 
