@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Menu, LogOut, X, ChevronDown } from "lucide-react"
+import { SearchBar } from "./SearchBar"
 
 const navLinks = [
   { href: "/spaces", label: "Spaces" },
@@ -49,8 +50,11 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Right Side - Auth */}
-          <div className="flex items-center">
+          {/* Right Side - Search + Auth */}
+          <div className="flex items-center space-x-2">
+            {/* Search Bar - Desktop & Mobile */}
+            <SearchBar />
+
             {status === "loading" ? (
               <div className="w-8 h-8 rounded-full bg-[#2e2e2e] animate-pulse" />
             ) : session ? (
@@ -118,6 +122,22 @@ export function Navbar() {
                       transition={{ duration: 0.2 }}
                       className="flex flex-col space-y-6 mt-8"
                     >
+                      {/* Mobile Search Trigger */}
+                      <button
+                        onClick={() => {
+                          setIsOpen(false)
+                          // Trigger search via custom event
+                          window.dispatchEvent(new CustomEvent("openSearch"))
+                        }}
+                        className="flex items-center space-x-3 text-[18px] font-medium transition-colors text-[#fafafa] hover:text-[#00c573]"
+                        style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
+                      >
+                        <span>Search</span>
+                        <kbd className="px-2 py-1 text-[12px] bg-[#0f0f0f] rounded border border-[#2e2e2e]">
+                          ⌘K
+                        </kbd>
+                      </button>
+
                       {/* Mobile Nav Links */}
                       <div className="flex flex-col space-y-4">
                         {navLinks.map((link) => (
