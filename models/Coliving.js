@@ -52,6 +52,9 @@ const ColivingSchema = new mongoose.Schema({
 // Indexes
 ColivingSchema.index({ area: 1 })
 
+// Text search index
+ColivingSchema.index({ name: 'text', description: 'text', area: 'text' })
+
 // Apply .lean() reminder: Use .lean() for query results when you only need plain JavaScript objects
 
 module.exports = mongoose.models.Coliving || mongoose.model('Coliving', ColivingSchema)
