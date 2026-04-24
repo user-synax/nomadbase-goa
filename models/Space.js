@@ -64,6 +64,9 @@ const SpaceSchema = new mongoose.Schema({
 // Indexes (slug is automatically indexed due to unique constraint)
 SpaceSchema.index({ area: 1 })
 
+// Text search index
+SpaceSchema.index({ name: 'text', description: 'text', area: 'text' })
+
 // Apply .lean() reminder: Use .lean() for query results when you only need plain JavaScript objects
 
 module.exports = mongoose.models.Space || mongoose.model('Space', SpaceSchema)
