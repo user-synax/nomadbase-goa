@@ -40,6 +40,9 @@ const ThreadSchema = new mongoose.Schema({
 ThreadSchema.index({ createdAt: -1 })
 ThreadSchema.index({ tags: 1 })
 
+// Text search index
+ThreadSchema.index({ title: 'text', body: 'text' })
+
 // Apply .lean() reminder: Use .lean() for query results when you only need plain JavaScript objects
 
 module.exports = mongoose.models.Thread || mongoose.model('Thread', ThreadSchema)
