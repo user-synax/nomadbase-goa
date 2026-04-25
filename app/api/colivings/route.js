@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  
+
   // Get filter parameters
-  const areas = searchParams.get("areas")?.split(",") || [];
+  const areaParam = searchParams.get("area");
+  const areasParam = searchParams.get("areas");
+  const areas = areaParam
+    ? [areaParam]
+    : (areasParam?.split(",") || []);
   const maxPrice = searchParams.get("maxPrice");
   const minStay = searchParams.get("minStay");
   const includes = searchParams.get("includes")?.split(",") || [];
