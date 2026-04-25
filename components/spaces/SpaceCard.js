@@ -1,8 +1,15 @@
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Wifi, Star, BadgeCheck, ChevronRight } from "lucide-react"
 
+// Helper to convert area name to slug
+function areaToSlug(area) {
+  return area.toLowerCase().replace(/\s+/g, '-');
+}
+
 export function SpaceCard({ space }) {
+  const router = useRouter()
   const getWifiBadge = (speed) => {
     if (speed >= 150) {
       return { color: "#3ecf8e", label: `${speed} Mbps` }
@@ -52,9 +59,16 @@ export function SpaceCard({ space }) {
           <h3 className="text-[24px] leading-[1.33] font-normal text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif", letterSpacing: "-0.16px" }}>
             {space.name}
           </h3>
-          <span className="px-2 py-1 text-[12px] rounded-full bg-[#242424] text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/areas/${areaToSlug(space.area)}`)
+            }}
+            className="px-2 py-1 text-[12px] rounded-full bg-[#242424] text-[#fafafa] hover:bg-[#3ecf8e]/20 hover:text-[#3ecf8e] transition-colors"
+            style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
+          >
             {space.area}
-          </span>
+          </button>
         </div>
 
         {/* WiFi Badge */}
