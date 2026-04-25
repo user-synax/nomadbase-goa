@@ -52,6 +52,16 @@ const SpaceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User' 
   },
+  speedTests: [{
+    speed: { type: Number, required: true },
+    reportedBy: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User',
+      required: true 
+    },
+    date: { type: Date, default: Date.now },
+    comment: { type: String, maxlength: 500 }
+  }],
   createdAt: { 
     type: Date, 
     default: Date.now 
@@ -59,6 +69,17 @@ const SpaceSchema = new mongoose.Schema({
 }, {
   collection: 'spaces',
   timestamps: true
+})
+
+// Pre-save hook to recalculate wifiSpeed from last 5 speed tests
+SpaceSchema.pre('save', function(next) {
+  if (this.speedTests && this.speedTests.length > 0) {
+    const sortedTests = this.speedTests.sort((a, b) => b.date - a.date)
+    const lastFive = sortedTests.slice(0, 5)
+    const avg = lastFive.reduce((sum, test) => sum + test.speed, 0) / lastFive.length
+    this.wifiSpeed = Math.round(avg)
+  }
+  next()
 })
 
 // Indexes (slug is automatically indexed due to unique constraint)
