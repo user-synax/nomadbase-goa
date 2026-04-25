@@ -5,14 +5,14 @@ export default async function ColivingDetailPage({ params }) {
   const { slug } = await params;
   
   // Fetch coliving data
-  const colivingRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/colivings/${slug}`, { cache: 'no-store' });
+  const colivingRes = await fetch(`/api/colivings/${slug}`, { cache: 'no-store' });
   if (!colivingRes.ok) {
     notFound();
   }
   const coliving = await colivingRes.json();
 
   // Fetch reviews
-  const reviewsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/colivings/${slug}/reviews`, { cache: 'no-store' });
+  const reviewsRes = await fetch(`/api/colivings/${slug}/reviews`, { cache: 'no-store' });
   const reviews = await reviewsRes.json();
 
   return <ColivingDetail coliving={coliving} reviews={reviews} />;
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/colivings/${slug}`, { cache: 'no-store' });
+    const res = await fetch(`/api/colivings/${slug}`, { cache: 'no-store' });
     if (!res.ok) return {};
     const coliving = await res.json();
     
