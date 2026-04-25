@@ -90,7 +90,7 @@ function SpacesPageContent() {
       }
       params.set("sort", sortBy)
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/spaces?${params.toString()}`)
+      const res = await fetch(`/api/spaces?${params.toString()}`)
       const data = await res.json()
       
       setSpaces(data.spaces || [])
