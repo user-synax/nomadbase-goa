@@ -21,8 +21,63 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NomadBase - Goa",
-  description: "NomadBase - Goa is a community for digital nomads in Goa",
+  metadataBase: new URL('https://nomadbase-goa.vercel.app'),
+  title: {
+    default: 'NomadBase Goa — Work From Paradise',
+    template: '%s | NomadBase Goa'
+  },
+  description: 'The definitive hub for digital nomads in Goa. Find co-working spaces, colivings, and a community that gets it.',
+  keywords: ['digital nomad goa', 'coworking goa', 'coliving goa', 'remote work goa', 'nomad goa', 'digital nomad india', 'work from goa', 'goa workspaces'],
+  authors: [{ name: 'NomadBase Goa' }],
+  creator: 'NomadBase Goa',
+  publisher: 'NomadBase Goa',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: '/',
+    siteName: 'NomadBase Goa',
+    title: 'NomadBase Goa — Work From Paradise',
+    description: 'The definitive hub for digital nomads in Goa. Find co-working spaces, colivings, and a community that gets it.',
+    images: [
+      {
+        url: '/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: 'NomadBase Goa - Work From Paradise',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@nomadbasegoa',
+    creator: '@nomadbasegoa',
+    title: 'NomadBase Goa — Work From Paradise',
+    description: 'The definitive hub for digital nomads in Goa. Find co-working spaces, colivings, and a community that gets it.',
+    images: ['/og-default.png'],
+  },
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-icon.png',
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default function RootLayout({
