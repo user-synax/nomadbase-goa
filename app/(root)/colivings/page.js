@@ -45,7 +45,7 @@ function ColivingsPageContent() {
         if (filters.verified) params.append("verified", "true")
         params.append("sortBy", sortBy)
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/colivings?${params.toString()}`)
+        const res = await fetch(`/api/colivings?${params.toString()}`)
         const data = await res.json()
         setColivings(data.colivings || [])
         setTotalCount(data.total || 0)
