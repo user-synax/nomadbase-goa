@@ -7,7 +7,7 @@ export async function generateMetadata({ params }) {
   const { threadId } = await params;
   
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/community/${threadId}`, {
+    const response = await fetch(`/api/community/${threadId}`, {
       cache: 'no-store'
     });
     const data = await response.json();
@@ -32,7 +32,7 @@ export default async function ThreadPage({ params }) {
   let serverData = { thread: null, replies: [], isAuthor: false };
   
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/community/${threadId}`, {
+    const response = await fetch(`/api/community/${threadId}`, {
       cache: 'no-store'
     });
     
