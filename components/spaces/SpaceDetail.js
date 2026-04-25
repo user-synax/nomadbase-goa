@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { 
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { SpeedBadge } from "@/components/shared/SpeedBadge";
+import { SpeedTestsSection } from "@/components/shared/SpeedGauge";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { 
@@ -40,6 +41,27 @@ export default function SpaceDetail({ space, reviews }) {
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [speedTests, setSpeedTests] = useState([]);
+
+  useEffect(() => {
+    // Check authentication status
+    fetch("/api/auth/session")
+      .then(res => res.json())
+      .then(session => {
+        setIsAuthenticated(!!session?.user);
+      })
+      .catch(() => setIsAuthenticated(false));
+
+    // Fetch speed tests
+    fetch(`/api/spaces/${space.slug}/speedtest`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.speedTests) {
+          setSpeedTests(data.speedTests);
+        }
+      })
+      .catch(console.error);
+  }, [space.slug]);
 
   const amenityIcons = {
     "AC": Wind,
@@ -127,10 +149,14 @@ export default function SpaceDetail({ space, reviews }) {
             </h1>
             
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              {/* Area badge */}
-              <span className="px-3 py-1 rounded-full text-sm font-medium bg-[#3ecf8e]/10 border border-[#3ecf8e] text-[#3ecf8e]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+              {/* Area badge - linked to area guide */}
+              <Link
+                href={`/areas/${space.area.toLowerCase().replace(/\s+/g, '-')}`}
+                className="px-3 py-1 rounded-full text-sm font-medium bg-[#3ecf8e]/10 border border-[#3ecf8e] text-[#3ecf8e] hover:bg-[#3ecf8e]/20 transition-colors"
+                style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}
+              >
                 {space.area}
-              </span>
+              </Link>
               
               {/* Verified badge */}
               {space.verified && (
@@ -238,18 +264,7 @@ export default function SpaceDetail({ space, reviews }) {
 
       {/* INFO GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#242424]">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* WiFi Speed */}
-          <div className="p-4 rounded-[8px] bg-[#0f0f0f] border border-[#2e2e2e]">
-            <div className="flex items-center gap-2 mb-2">
-              <Wifi size={18} className="text-[#3ecf8e]" />
-              <span className="text-sm font-medium text-[#898989]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
-                WiFi Speed
-              </span>
-            </div>
-            <SpeedBadge speed={space.wifiSpeed || 100} />
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Hours */}
           <div className="p-4 rounded-[8px] bg-[#0f0f0f] border border-[#2e2e2e]">
             <div className="flex items-center gap-2 mb-2">
@@ -289,6 +304,28 @@ export default function SpaceDetail({ space, reviews }) {
               <span className="text-[#898989] mx-2">•</span>
               ₹{space.price?.monthly || 15000}/month
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SPEED TESTS SECTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-[#242424]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <SpeedTestsSection
+            spaceSlug={space.slug}
+            wifiSpeed={space.wifiSpeed}
+            speedTests={speedTests}
+            isAuthenticated={isAuthenticated}
+          />
+          <div className="flex items-center justify-center">
+            <div className="text-center">
+              <h3 className="text-[24px] leading-[1.33] font-normal mb-4 text-[#fafafa]" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif", letterSpacing: "-0.16px" }}>
+                WiFi Quality Matters
+              </h3>
+              <p className="text-[16px] leading-[1.50] text-[#b4b4b4] max-w-md" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
+                As a digital nomad, reliable internet is essential. These speed tests are reported by community members who&apos;ve worked from this space.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -396,7 +433,26 @@ export default function SpaceDetail({ space, reviews }) {
         <div className="space-y-4">
           <p className="text-[16px] leading-[1.50] text-[#b4b4b4] flex items-center gap-2" style={{ fontFamily: "Circular, custom-font, Helvetica Neue, Helvetica, Arial, sans-serif" }}>
             <MapPin size={18} className="text-[#3ecf8e]" />
-            {space.address || `${space.area}, Goa`}
+            {space.address ? (
+              <>
+                {space.address.split(space.area)[0]}
+                <Link
+                  href={`/areas/${space.area.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="text-[#00c573] hover:underline"
+                >
+                  {space.area}
+                </Link>
+                {space.address.split(space.area)[1]}
+              </>
+            ) : (
+              <Link
+                href={`/areas/${space.area.toLowerCase().replace(/\s+/g, '-')}`}
+                className="text-[#00c573] hover:underline"
+              >
+                {space.area}
+              </Link>
+            )}
+            , Goa
           </p>
           <div className="w-full h-[300px] rounded-[8px] overflow-hidden border border-[#2e2e2e]">
             <iframe
