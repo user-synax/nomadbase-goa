@@ -20,7 +20,7 @@ function FeaturedSpaces() {
   useEffect(() => {
     const fetchSpaces = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/spaces?limit=3`, {
+        const res = await fetch(`/api/spaces?limit=3`, {
           cache: 'no-store'
         })
         const data = await res.json()
@@ -74,7 +74,7 @@ function CommunityThreads() {
   useEffect(() => {
     const fetchThreads = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/community?limit=3`, {
+        const res = await fetch(`/api/community?limit=3`, {
           cache: 'no-store'
         })
         const data = await res.json()
